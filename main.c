@@ -1,7 +1,32 @@
 #include <ncurses.h>
 #include <stdbool.h>
+#include <dirent.h>
+#include <stdlib.h>
 
 #define MAX_ITEMS 4
+
+typedef struct {
+	unsigned int count;
+	char **list;
+} my_dirslist;
+
+my_dirslist dirs_list(my_dirslist dl, char *dst_name)
+{
+	while (dl.count) {
+		free(*(dl.list + dl.count));
+		dl.count++;
+	}
+
+	dl.list = malloc(sizeof(char*));
+	DIR *DIRp;
+	char name[NAME_MAX] = {"."};
+
+	//char **dlist
+
+	DIRp = opendir(name);
+	//for ()
+
+}
 
 int main(int argc, char **argv)
 {
@@ -32,8 +57,8 @@ int main(int argc, char **argv)
 			else
 				printw("    %s\n", marr[i]);
 		}
-		
-		wborder(stdscr, '.', '.', '.', '.', '.', '.', '.', '.');
+
+		wborder(stdscr, '*', '*', '*', '*', '+', '+', '+', '+');
 		updwn = getch();
 		clear();
 		//refresh();
