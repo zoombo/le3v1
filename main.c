@@ -12,31 +12,30 @@ int main(int argc, char **argv)
 
 	initscr();
 	keypad(stdscr, true);
-	while (true)
-	{
-		updwn = getch();
-		clear();
-		if (updwn == KEY_UP && position > 0)
-		{
+
+	while (true) {
+		if (updwn == KEY_UP && position > 0) {
 			position--;
 			//printw("UP\n");
 		}
-		if (updwn == KEY_DOWN && position < MAX_ITEMS - 1)
-		{
+		if (updwn == KEY_DOWN && position < MAX_ITEMS - 1) {
 			position++;
 			//printw("DOWN\n");
 		}
 		if (updwn == 'q')
 			break;
 
-
-		for (int i = 0; i < MAX_ITEMS; i++)
-		{
+		printw("\n");
+		for (int i = 0; i < MAX_ITEMS; i++) {
 			if (i == position)
-				printw("> %s\n", marr[i]);
+				printw("  > %s\n", marr[i]);
 			else
-				printw("  %s\n", marr[i]);
+				printw("    %s\n", marr[i]);
 		}
+		
+		wborder(stdscr, '.', '.', '.', '.', '.', '.', '.', '.');
+		updwn = getch();
+		clear();
 		//refresh();
 
 
