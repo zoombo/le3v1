@@ -34,7 +34,7 @@ my_dirslist *dirs_list(my_dirslist *dl, char *dst_name) {
 
     dl->list = (char**) malloc(sizeof (char*));
     DIR *DIRp;
-    char name[NAME_MAX];
+    //char name[NAME_MAX];
     struct dirent *current_dir;
     // Открываем каталог.
     DIRp = opendir(dst_name);
@@ -46,6 +46,7 @@ my_dirslist *dirs_list(my_dirslist *dl, char *dst_name) {
             *(dl->list + dl->count) = malloc(current_dir->d_reclen + 1);
             // Копируем имя в список.
             strcpy(*(dl->list + dl->count), current_dir->d_name);
+            printf("%s\n", *(dl->list + dl->count+1));
             dl->count++;
             dl->list = realloc(dl->list, dl->count + 1);
         }
