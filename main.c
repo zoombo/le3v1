@@ -1,8 +1,7 @@
-//#include <ncurses.h>
+#include <ncurses.h>
 #include <stdbool.h>
 #include <dirent.h>
 #include <stdlib.h>
-//#include <libio.h> // Тут define NULL
 #include <string.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -54,7 +53,7 @@ int main(int argc, char **argv) {
 
             }
      */
-    //my_dirslist *mdirs = malloc(sizeof (my_dirslist));
+   
     
     my_dirslist mdirs;
     memset(&mdirs, 0, sizeof (my_dirslist));
@@ -63,8 +62,18 @@ int main(int argc, char **argv) {
     //printf("%d\n", mdirs.count);
     for (int i = mdirs.count - 1; i >= 0; i--)
         printf("%s\n", *(mdirs.list + i));
-        
-    printf("Hello!\n");
+/*
+    // DEBUG. 
+    chdir("..");
+    printf("--------------\n");
+    dirs_list(&mdirs, ".");
+    //printf("%d\n", mdirs.count);
+    for (int i = mdirs.count - 1; i >= 0; i--)
+        printf("%s\n", *(mdirs.list + i));
+    // END_DEBUG.     
+*/
+    dirs_list_free(&mdirs);
+    //printf("Hello!\n");
     
 //    
 //    refresh();
