@@ -3,6 +3,7 @@
 #include <dirent.h>
 #include <string.h>
 
+
 /*
  *
  */
@@ -16,6 +17,25 @@ typedef struct {
     char **list;
 } my_dirslist;
 
+
+/// Очищает кучу по адресам из принятой структуры.
+/// \param dl
+
+void dirs_list_free(my_dirslist *dl) {
+
+    while (dl->count) {
+        free(*(dl->list + dl->count));
+        dl->count--;
+
+        if (!dl->count) {
+            free(*(dl->list)); // Valgrind - Must have!
+            free(dl->list);
+        }
+
+    }
+}
+
+
 /// Очищает динамическую память принятой структуры
 /// и возвращает и возвращает такуюже структуру заполненную новыми данными. 
 /// \param dl
@@ -25,16 +45,7 @@ typedef struct {
 int dirs_list(my_dirslist *dl, char *dst_name) {
 
     // Очищаем старые данные.
-    while (dl->count) {
-        free(*(dl->list + dl->count));
-        dl->count--;
-
-        if (!dl->count) {
-            free(*(dl->list));
-            free(dl->list);
-        }
-
-    }
+    dirs_list_free(dl);
 
     // Создаем новые записи. Сразу закинем в начало списка
     // обозначения дочернего и родительского каталогов.
@@ -85,19 +96,3 @@ int dirs_list(my_dirslist *dl, char *dst_name) {
 
 }
 
-/// Очищает кучу по адресам из принятой структуры.
-/// \param dl
-
-void dirs_list_free(my_dirslist *dl) {
-
-    while (dl->count) {
-        free(*(dl->list + dl->count));
-        dl->count--;
-
-        if (!dl->count) {
-            free(*(dl->list)); // Valgrind - Must have!
-            free(dl->list);
-        }
-
-    }
-}
