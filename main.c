@@ -14,56 +14,63 @@ int main(int argc, char **argv) {
 
     //const char *marr[MAX_ITEMS] = {"Item1", "Item2", "Item3", "Item4"};
 
-    unsigned int pressed_key = 0;
-    unsigned int position = 0;
+    
+        unsigned int pressed_key = 0;
+        unsigned int position = 0;
 
-    dirslist_t mdirs;
-    memset(&mdirs, 0, sizeof (dirslist_t));
+        dirslist_t *mdirs;
+        
+        WINDOW *mwin = initscr();
+        noecho();
+        
+        keypad(stdscr, true);
 
-    initscr();
-    keypad(stdscr, true);
+        mdirs = dirs_list(".");
 
-    dirs_list(&mdirs, ".");
+        while (true) {
 
-    while (true) {
+            if (pressed_key == KEY_UP && position > 0) {
+                position--;
+                //printw("UP\n");
+            }
+            if (pressed_key == KEY_DOWN && position < mdirs->count - 1) {
+                position++;
+                //printw("DOWN\n");
+            }
+            if (pressed_key == 'e') {
+                //printw("\n\n  ENTER pressed\n");
+                chdir(*(mdirs->list + position));
+                //printw("\n\n  Entered: %s\n", *(mdirs.list + position));
+                dirs_list_free(mdirs);
+                free(mdirs);
+                mdirs = dirs_list(".");
+                position = 0;
+                pressed_key = ' ';
+                continue;
+            }
 
-        if (pressed_key == KEY_UP && position > 0) {
-            position--;
-            //printw("UP\n");
+            if (pressed_key == 'q')
+                break;
+
+            printw("----> %d\n", mdirs->count);
+
+            for (int i = 0; i < mdirs->count - 1 && getmaxy(mwin) > i; i++) {
+                if (i == position)
+                    printw("  > %s\n", *(mdirs->list + i));
+                else
+                    printw("    %s\n", *(mdirs->list + i));
+            }
+
+
+            wborder(stdscr, '*', '*', '*', '*', '+', '+', '+', '+');
+            pressed_key = getch();
+            clear();
+            refresh();
+
+
         }
-        if (pressed_key == KEY_DOWN && position < mdirs.count - 1) {
-            position++;
-            //printw("DOWN\n");
-        }
-        if (pressed_key == 'e') {
-            printw("\n\n  ENTER pressed\n");
-            chdir(*(mdirs.list + position));
-            printw("\n\n  Entered: %s\n", *(mdirs.list + position));
-            dirs_list_free(&mdirs);
-            dirs_list(&mdirs, ".");
-            position = 0;
-            pressed_key = ' ';
-            continue;
-        }
-
-        if (pressed_key == 'q')
-            break;
-
-        printw("\n");
-        for (int i = 0; i < mdirs.count-i; i++) {
-            if (i == position)
-                printw("  > %s\n", *(mdirs.list + i));
-            else
-                printw("    %s\n", *(mdirs.list + i));
-        }
-
-        wborder(stdscr, '*', '*', '*', '*', '+', '+', '+', '+');
-        pressed_key = getch();
-        clear();
-        refresh();
-
-
-    }
+        dirs_list_free(mdirs);
+     
 
 
 
