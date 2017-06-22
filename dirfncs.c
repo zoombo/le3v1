@@ -15,13 +15,15 @@
 typedef struct {
     unsigned int count;
     char **list;
-} my_dirslist;
+} dirslist_t;
 
 
 /// Очищает кучу по адресам из принятой структуры.
 /// \param dl
 
-void dirs_list_free(my_dirslist *dl) {
+void dirs_list_free(dirslist_t *dl) {
+
+    dl->count--;
 
     while (dl->count) {
         free(*(dl->list + dl->count));
@@ -36,16 +38,14 @@ void dirs_list_free(my_dirslist *dl) {
 }
 
 
-/// Очищает динамическую память принятой структуры
-/// и возвращает и возвращает такуюже структуру заполненную новыми данными. 
+/// Возвращает указатель на структуру dirslist_t заполненную новыми данными. 
 /// \param dl
 /// \param dst_name
 /// \return 
 
-int dirs_list(my_dirslist *dl, char *dst_name) {
+dirslist_t *dirs_list(char *dst_name) {
 
-    // Очищаем старые данные.
-    dirs_list_free(dl);
+    dirslist_t *dl = malloc(sizeof (dirslist_t));
 
     // Создаем новые записи. Сразу закинем в начало списка
     // обозначения дочернего и родительского каталогов.
@@ -59,8 +59,6 @@ int dirs_list(my_dirslist *dl, char *dst_name) {
     // Указваем что в списке уже есть два элемента.
     dl->count = 2;
 
-
-    // dl->list = (char**)malloc(sizeof(char*) * 3);
 
     // Структура описатель "потока" каталога.
     DIR *DIRp;
@@ -79,10 +77,9 @@ int dirs_list(my_dirslist *dl, char *dst_name) {
                 continue;
 
             // Выделяем место под название каталога.
-            *(dl->list + dl->count) = malloc(strlen(current_dir->d_name));
+            *(dl->list + dl->count) = malloc(strlen(current_dir->d_name) + 1);
             // Копируем имя в список.
             strcpy(*(dl->list + dl->count), current_dir->d_name);
-            //*((*(dl->list + dl->count)) + strlen(current_dir->d_name) + 1) = '\0';
 
             // Увеличиваем список.
             dl->count++;
@@ -90,9 +87,11 @@ int dirs_list(my_dirslist *dl, char *dst_name) {
 
         }
         closedir(DIRp);
-        return 0;
-    } else
-        return -1;
+        return dl;
+    } else {
+        printf("Return: NULL!\n");
+        return NULL;
+    }
 
 }
 

@@ -17,8 +17,8 @@ int main(int argc, char **argv) {
     unsigned int pressed_key = 0;
     unsigned int position = 0;
 
-    my_dirslist mdirs;
-    memset(&mdirs, 0, sizeof (my_dirslist));
+    dirslist_t mdirs;
+    memset(&mdirs, 0, sizeof (dirslist_t));
 
     initscr();
     keypad(stdscr, true);
@@ -91,7 +91,7 @@ int main(int argc, char **argv) {
 
     //  
     refresh();
-    //    getch();
+    getch();
     endwin();
 
 

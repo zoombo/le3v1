@@ -3,10 +3,10 @@
 typedef struct {
     unsigned int count;
     char **list;
-} my_dirslist;
+} dirslist_t;
 
-void dirs_list_free(my_dirslist *dl);
-int dirs_list(my_dirslist *dl, char *dst_name);
+void dirs_list_free(dirslist_t *dl);
+dirslist_t *dirs_list(char *dst_name);
 
 
 
