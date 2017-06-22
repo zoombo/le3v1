@@ -23,6 +23,7 @@ typedef struct {
 
 void dirs_list_free(dirslist_t *dl) {
 
+    // Чтобы не осовбодить несуществующий адрес.
     dl->count--;
 
     while (dl->count) {

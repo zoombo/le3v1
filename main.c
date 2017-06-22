@@ -8,98 +8,107 @@
 
 #include "dirfncs.h"
 
-#define NAME_MAX 255
+#define BOTTOM_BORDER 5
 
 int main(int argc, char **argv) {
 
-    //const char *marr[MAX_ITEMS] = {"Item1", "Item2", "Item3", "Item4"};
+    // Содержит код нажатой клавиши.
+    unsigned int pressed_key = 0;
+    // Текущая позиция "курсора" в списке.
+    unsigned int position = 0;
 
-    
-        unsigned int pressed_key = 0;
-        unsigned int position = 0;
+    dirslist_t *mdirs;
 
-        dirslist_t *mdirs;
-        
-        WINDOW *mwin = initscr();
-        noecho();
-        
-        keypad(stdscr, true);
+    // Инициализация окна ncurses
+    WINDOW *mwin = initscr();
 
-        mdirs = dirs_list(".");
+    // Не выводить нажатые клавиши
+    noecho();
+    // Цветные рамка и выделение.
+    start_color();
 
-        while (true) {
+    // Цвет курсора.
+    init_pair(1, COLOR_BLACK, COLOR_BLUE);
+    // Цвет рамки.
+    init_pair(2, COLOR_BLACK, COLOR_CYAN);
 
-            if (pressed_key == KEY_UP && position > 0) {
-                position--;
-                //printw("UP\n");
-            }
-            if (pressed_key == KEY_DOWN && position < mdirs->count - 1) {
-                position++;
-                //printw("DOWN\n");
-            }
-            if (pressed_key == 'e') {
-                //printw("\n\n  ENTER pressed\n");
-                chdir(*(mdirs->list + position));
-                //printw("\n\n  Entered: %s\n", *(mdirs.list + position));
-                dirs_list_free(mdirs);
-                free(mdirs);
-                mdirs = dirs_list(".");
-                position = 0;
-                pressed_key = ' ';
-                continue;
-            }
+    // Управление клавиатурой.
+    keypad(stdscr, true);
 
-            if (pressed_key == 'q')
-                break;
+    // Получаем список файлов каталога в котором запущена программа.
+    mdirs = dirs_list(".");
 
-            printw("----> %d\n", mdirs->count);
+    while (true) {
 
-            for (int i = 0; i < mdirs->count - 1 && getmaxy(mwin) > i; i++) {
-                if (i == position)
-                    printw("  > %s\n", *(mdirs->list + i));
-                else
-                    printw("    %s\n", *(mdirs->list + i));
-            }
+        if (pressed_key == KEY_UP && position > 0)
+            position--;
+        if (pressed_key == KEY_DOWN && position < mdirs->count - 1)
+            position++;
 
-
-            wborder(stdscr, '*', '*', '*', '*', '+', '+', '+', '+');
-            pressed_key = getch();
-            clear();
-            refresh();
-
-
+        // Если нажат ENTER
+        if (pressed_key == '\n') {
+            // Переходим в каталог на котором нажали ENTER
+            chdir(*(mdirs->list + position));
+            // Освобождаем память занятую предыдущим списком.
+            dirs_list_free(mdirs);
+            // Освобождаем память переменной.
+            free(mdirs);
+            // Загружаем список файлов нового каталога. 
+            mdirs = dirs_list(".");
+            // Обнуляем позицию.
+            position = 0;
+            // Обнуляем чтобы не зациклилось.
+            pressed_key = ' ';
+            continue;
         }
-        dirs_list_free(mdirs);
-     
 
+        // Выход по нажатию клавиши 'q'
+        if (pressed_key == 'q')
+            break;
+        
+        // Отображает текущий каталог в заголовке.
+        // Valgrind говорит что в этой функции иногда происходят ошибки.
+        printw("\n > %s\n", get_current_dir_name());
 
+        // Переменная хранящая позицию с которой 
+        // начинать выводить список файлов.
+        int tmp_pos = 0;
+        // Вычисляем номер элемента с которого выводить список если
+        // курсор ушел за нижний край.
+        if (position + BOTTOM_BORDER > getmaxy(mwin)) {
+            tmp_pos = position - getmaxy(mwin);
+            tmp_pos += 4;
+        }
 
-    /*
-        my_dirslist mdirs;
-        memset(&mdirs, 0, sizeof (my_dirslist));
-     */
+        // Вывод списка.
+        for (; tmp_pos < mdirs->count; tmp_pos++) {
+            if (tmp_pos == position) {
+                attron(COLOR_PAIR(1));
+                printw("    %s\n", *(mdirs->list + tmp_pos));
+                attroff(COLOR_PAIR(1));
+            } else
+                printw("    %s\n", *(mdirs->list + tmp_pos));
+        }
 
-    ////+//// dirs_list(&mdirs, ".");
-    //printf("%d\n", mdirs.count);
-    ////+////for (int i = mdirs.count - 1; i >= 0; i--)
-    ////+////printf("%s\n", *(mdirs.list + i));
-    /*
-        // DEBUG. 
-        chdir("..");
-        printf("--------------\n");
-        dirs_list(&mdirs, ".");
-        //printf("%d\n", mdirs.count);
-        for (int i = mdirs.count - 1; i >= 0; i--)
-            printf("%s\n", *(mdirs.list + i));
-        // END_DEBUG.     
-     */
-    ////+////    dirs_list_free(&mdirs);
-    //printf("Hello!\n");
+        // Этими макросами окружаем элементы
+        // которые должны быть цветными.
+        attron(COLOR_PAIR(2));
+        wborder(stdscr, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ');
+        attroff(COLOR_PAIR(2));
 
-    //  
+        // Ждем нового нажатия клавиши.
+        pressed_key = getch();
+        // Очищаем экран для следующей отрисовки.
+        clear();
+
+    }
+
+    // Тут можно не очищать, но так из Valgrind исчезат лишняя инфа.
+    dirs_list_free(mdirs);
+    free(mdirs);
+
+    // Чтобы после выхода терминал не чудил.
     refresh();
-    getch();
     endwin();
-
 
 }
