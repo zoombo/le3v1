@@ -128,7 +128,7 @@ int main(int argc, char **argv) {
 
     }
 
-    // Тут можно не очищать, но так из Valgrind исчезат лишняя инфа.
+    // Тут можно не очищать, но так из Valgrind исчезает лишняя инфа.
     dirs_list_free(mdirs);
     free(mdirs);
 
