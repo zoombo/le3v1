@@ -2,11 +2,12 @@
 
 typedef struct {
     unsigned int count;
-    char **list;
+    struct item **ilist;
 } dirslist_t;
 
-void dirs_list_free(dirslist_t *dl);
-dirslist_t *dirs_list(char *dst_name);
+void items_list_free(dirslist_t *dl);
+dirslist_t *items_list(char *dst_name);
+//struct item *new_item(const char* item_name, enum item_type iamtype);
 
 enum item_type {
     ISDIR = 10,

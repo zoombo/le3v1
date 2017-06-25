@@ -5,6 +5,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 #include "dirfncs.h"
 
@@ -37,7 +39,7 @@ int main(int argc, char **argv) {
     keypad(stdscr, true);
 
     // Получаем список файлов каталога в котором запущена программа.
-    mdirs = dirs_list(".");
+    mdirs = items_list(".");
 
     while (true) {
         /*
@@ -70,14 +72,23 @@ int main(int argc, char **argv) {
 
         // Если нажат ENTER
         if (pressed_key == '\n') {
+
+/*
+ *          // Пока закомментим но...
+            pid_t ipid;
+            if ((*(mdirs->ilist + real_position))->itype == ISFILE)
+                
+                ;
+*/
+
             // Переходим в каталог на котором нажали ENTER
-            chdir(*(mdirs->list + real_position));
+            chdir((*(mdirs->ilist + real_position))->name);
             // Освобождаем память занятую предыдущим списком.
-            dirs_list_free(mdirs);
+            items_list_free(mdirs);
             // Освобождаем память переменной.
             free(mdirs);
             // Загружаем список файлов нового каталога. 
-            mdirs = dirs_list(".");
+            mdirs = items_list(".");
             // Обнуляем позицию.
             position = 0;
             real_position = 0;
@@ -109,10 +120,21 @@ int main(int argc, char **argv) {
         for (; tmp_pos < mdirs->count; tmp_pos++) {
             if (tmp_pos == real_position) {
                 attron(COLOR_PAIR(1));
-                printw("    %s\n", *(mdirs->list + tmp_pos));
+
+                if ((*(mdirs->ilist + tmp_pos))->itype == ISDIR)
+                    printw("    /%s\n", (*(mdirs->ilist + tmp_pos))->name);
+
+                if ((*(mdirs->ilist + tmp_pos))->itype == ISFILE)
+                    printw("    %s\n", (*(mdirs->ilist + tmp_pos))->name);
+
                 attroff(COLOR_PAIR(1));
-            } else
-                printw("    %s\n", *(mdirs->list + tmp_pos));
+            } else {
+                if ((*(mdirs->ilist + tmp_pos))->itype == ISDIR)
+                    printw("    /%s\n", (*(mdirs->ilist + tmp_pos))->name);
+
+                if ((*(mdirs->ilist + tmp_pos))->itype == ISFILE)
+                    printw("    %s\n", (*(mdirs->ilist + tmp_pos))->name);
+            }
         }
 
         // Этими макросами окружаем элементы
@@ -129,7 +151,7 @@ int main(int argc, char **argv) {
     }
 
     // Тут можно не очищать, но так из Valgrind исчезает лишняя инфа.
-    dirs_list_free(mdirs);
+    items_list_free(mdirs);
     free(mdirs);
 
     // Чтобы после выхода терминал не чудил.
