@@ -73,13 +73,30 @@ int main(int argc, char **argv) {
         // Если нажат ENTER
         if (pressed_key == '\n') {
 
-/*
- *          // Пока закомментим но...
-            pid_t ipid;
-            if ((*(mdirs->ilist + real_position))->itype == ISFILE)
-                
-                ;
-*/
+
+            // Пока закомментим но...
+            if ((*(mdirs->ilist + real_position))->itype == ISFILE) {
+                char work[255];
+                strcpy(work, getcwd(NULL, 255));
+                strcat(work, "/");
+                strcat(work, (*(mdirs->ilist + real_position))->name);
+                printw("\n\n %s\n", work);
+                pid_t ipid;
+                ipid = fork();
+                if (ipid == 0) {
+                    //execle(work, work, NULL);
+                    //execl("/usr/bin/ls", "/usr/bin/ls", NULL);
+                    exit(0);
+                }
+                int statuss;
+                wait(&statuss);
+                getch();
+                pressed_key = ' ';
+                continue;
+            }
+
+
+
 
             // Переходим в каталог на котором нажали ENTER
             chdir((*(mdirs->ilist + real_position))->name);
@@ -103,7 +120,7 @@ int main(int argc, char **argv) {
 
         // Отображает текущий каталог в заголовке.
         // Valgrind говорит что в этой функции иногда происходят ошибки.
-        printw("\n > %s\n", get_current_dir_name());
+        printw("\n > %s\n", getcwd(NULL, 255));
 
         // Переменная хранящая позицию с которой 
         // начинать выводить список файлов.
