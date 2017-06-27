@@ -73,37 +73,40 @@ int main(int argc, char **argv) {
         // Если нажат ENTER
         if (pressed_key == '\n') {
 
-
-            // Пока закомментим но...
+            // Тут запуск файла.
             if ((*(mdirs->ilist + real_position))->itype == ISFILE) {
                 char work[255];
+                // Тут строим полный путь к запускаемому файлу.
                 strcpy(work, getcwd(NULL, 255));
                 strcat(work, "/");
                 strcat(work, (*(mdirs->ilist + real_position))->name);
-                printw("\n\n %s\n", work);
+
+                //printw("\n\n %s\n", work);
+                // Временно закрываем окно 
                 clear();
                 refresh();
                 endwin();
-                printf("\n\n %s\n", work);
+                printf("\n%s\n", work);
                 pid_t ipid;
                 ipid = fork();
                 if (ipid == 0) {
                     execl(work, work, NULL);
                     //execl("/usr/bin/ls", "/usr/bin/ls", "-al", NULL);
-                    FILE *file_ptr = fopen("le3_log.log", "w");
-                    fprintf(file_ptr, "\n %s \n", "This print!");
-                    fclose(file_ptr);
                     exit(0);
                 }
+                // Что-то типа лога.
+                // FILE *file_ptr = fopen("le3_log.log", "w");
+                // fprintf(file_ptr, "\n %s - %s \n", work, "was executed.\n");
+                // fclose(file_ptr);
+                                
                 int statuss;
                 wait(&statuss);
                 getch();
                 pressed_key = ' ';
+                // Снова открываем окно.
                 mwin = initscr();
                 continue;
             }
-
-
 
 
             // Переходим в каталог на котором нажали ENTER
