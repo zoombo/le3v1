@@ -5,7 +5,7 @@ typedef struct {
     struct item **ilist;
 } dirslist_t;
 
-void items_list_free(dirslist_t *dl);
+void items_list_free(dirslist_t **dl);
 dirslist_t *items_list(char *dst_name);
 //struct item *new_item(const char* item_name, enum item_type iamtype);
 

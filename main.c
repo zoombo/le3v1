@@ -112,9 +112,7 @@ int main(int argc, char **argv) {
             // Переходим в каталог на котором нажали ENTER
             chdir((*(mdirs->ilist + real_position))->name);
             // Освобождаем память занятую предыдущим списком.
-            items_list_free(mdirs);
-            // Освобождаем память переменной.
-            free(mdirs);
+            items_list_free(&mdirs);
             // Загружаем список файлов нового каталога. 
             mdirs = items_list(".");
             // Обнуляем позицию.
@@ -179,8 +177,7 @@ int main(int argc, char **argv) {
     }
 
     // Тут можно не очищать, но так из Valgrind исчезает лишняя инфа.
-    items_list_free(mdirs);
-    free(mdirs);
+    items_list_free(&mdirs);
 
     // Чтобы после выхода терминал не чудил.
     refresh();

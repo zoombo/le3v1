@@ -26,24 +26,27 @@ typedef struct {
 /// Очищает кучу по адресам из принятой структуры.
 /// \param dl
 
-void items_list_free(dirslist_t *dl) {
+void items_list_free(dirslist_t **dl) {
 
-    // Чтобы не осовбодить несуществующий адрес.
-    dl->count--;
+    // Чтобы не освободить несуществующий адрес.
+    (*dl)->count--;
 
-    while (dl->count) {
-        free((*(dl->ilist + dl->count))->name);
-        free(*(dl->ilist + dl->count));
-        dl->count--;
+    while ((*dl)->count) {
+        free((*((*dl)->ilist + (*dl)->count))->name);
+        free(*((*dl)->ilist + (*dl)->count));
+        (*dl)->count--;
 
-        if (!dl->count) {
-            free((*(dl->ilist))->name);
-            free(*(dl->ilist)); // Valgrind - Must have!
-            free(dl->ilist);
+        if (!(*dl)->count) {
+            free((*((*dl)->ilist))->name);
+            free(*((*dl)->ilist)); // Valgrind - Must have!
+            free((*dl)->ilist);
         }
-
     }
+    free(*dl);
+    
 }
+
+
 
 /// Создает в куче структуру типа item, заполняет её
 /// принятыми данными и возвращет указатель на нее.  
@@ -142,6 +145,7 @@ dirslist_t *items_list(char *dst_name) {
             dl->ilist = realloc(dl->ilist, sizeof (struct item*) * (dl->count + 1));
 
         }
+        *(dl->ilist + dl->count) = NULL;
         closedir(DIRp);
         return dl;
     } else {
