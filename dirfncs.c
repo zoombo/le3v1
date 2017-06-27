@@ -6,6 +6,7 @@
 
 #include "dirfncs.h"
 
+#define uint unsigned int
 
 /*
  *
@@ -21,6 +22,25 @@ typedef struct {
     struct item **ilist;
 } dirslist_t;
  */
+
+/// Сортирует список файлов поднимая каталоги вверх.
+/// \param dl
+
+/*
+static void items_list_sort(dirslist_t *dl) {
+
+    struct item *tmp_item = NULL;
+    //unsigned int items_count = dl->count;
+
+    for (uint i = 2; i < dl->count; i++) {
+        if (*(dl->ilist + i)->itype == ISFILE) {
+            tmp_item = *(dl->ilist + (i + 1));
+            //dl->ilist
+        }
+    }
+
+}
+*/
 
 
 /// Очищает кучу по адресам из принятой структуры.
@@ -43,7 +63,32 @@ void items_list_free(dirslist_t **dl) {
         }
     }
     free(*dl);
-    
+
+}
+
+/// Очищает кучу по адресам из принятой структуры.
+/// Написана проще предыдущей. Наверное...
+/// \param dl
+
+void items_list_free2(dirslist_t **dirl) {
+
+    dirslist_t *dl = *dirl;
+    // Чтобы не освободить несуществующий адрес.
+    dl->count--;
+
+    while (dl->count) {
+        free((*(dl->ilist + dl->count))->name);
+        free(*(dl->ilist + dl->count));
+        dl->count--;
+
+        if (!dl->count) {
+            free((*(dl->ilist))->name);
+            free(*(dl->ilist)); // Valgrind - Must have!
+            free(dl->ilist);
+        }
+    }
+    free(*dirl);
+
 }
 
 

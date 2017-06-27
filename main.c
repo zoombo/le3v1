@@ -63,11 +63,15 @@ int main(int argc, char **argv) {
                     position--;
         }
         if (pressed_key == KEY_DOWN) {
-            if (position < mdirs->count - 1) {
+            if (position < mdirs->count - 1 || real_position < position) {
                 real_position++;
                 if (real_position > position)
                     position++;
             }
+/*
+            if (real_position < mdirs->count-1)
+                real_position++;
+*/
         }
 
         // Если нажат ENTER
