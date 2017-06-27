@@ -81,17 +81,25 @@ int main(int argc, char **argv) {
                 strcat(work, "/");
                 strcat(work, (*(mdirs->ilist + real_position))->name);
                 printw("\n\n %s\n", work);
+                clear();
+                refresh();
+                endwin();
+                printf("\n\n %s\n", work);
                 pid_t ipid;
                 ipid = fork();
                 if (ipid == 0) {
-                    //execle(work, work, NULL);
-                    //execl("/usr/bin/ls", "/usr/bin/ls", NULL);
+                    execl(work, work, NULL);
+                    //execl("/usr/bin/ls", "/usr/bin/ls", "-al", NULL);
+                    FILE *file_ptr = fopen("le3_log.log", "w");
+                    fprintf(file_ptr, "\n %s \n", "This print!");
+                    fclose(file_ptr);
                     exit(0);
                 }
                 int statuss;
                 wait(&statuss);
                 getch();
                 pressed_key = ' ';
+                mwin = initscr();
                 continue;
             }
 
